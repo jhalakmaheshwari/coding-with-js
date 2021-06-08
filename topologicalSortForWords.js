@@ -1,0 +1,46 @@
+/**
+ * @param {string[]} words
+ * @return {string}
+ */
+var alienOrder = function(words) {
+    var adjList = new Map()
+    for(let i = 0; i < words.length; i++){
+        for(let j = 1; j < words[i].length; j++) {
+            if(words[i][j-1] === words[i][j]){
+                adjList.set(words[i][j-1], new Set())
+                continue
+            }
+            if(adjList.has(words[i][j-1]))
+                adjList.set(words[i][j-1], adjList.get(words[i][j-1]).add(words[i][j]))
+            else{
+                const set = new Set(words[i][j])
+                adjList.set(words[i][j-1], set)
+            }
+        }
+    }
+    console.log(adjList)
+    console.log('Adj List is ready')
+    
+    // Write topological sort
+    let visited = new Set() // to check visited nodes
+    let stack = [] // array to save order
+    
+    adjList.forEach((value, key) => {
+        console.log('adjMap', key)
+        if(!visited.has(key))
+            topSort(key, adjList, stack, visited)
+    })
+    return stack.reverse().join('')
+};
+
+var topSort = (vertex, adjList, stack, visited) => {
+    const list = adjList.get(vertex)
+    console.log(vertex, visited, 'LIST', list)
+    visited.add(vertex)
+    for(let item of list) {
+            if(visited.has(item))
+                continue
+            topSort(item, adjList, stack, visited)
+        }
+    stack.push(vertex)
+}
